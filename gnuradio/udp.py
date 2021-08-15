@@ -1,67 +1,34 @@
 import pyaudio
 import socket
-from threading import Thread
 import sys
 
 frames = []
 hosts = ['127.0.0.1']
 port = 7355
-def udpStreamIn():
-    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    while True:
-        if len(frames) > 0:
-            data = frames.pop(0)
-            for host in hosts:
-                udp.sendto(data, (host, port))
-    udp.close()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(("127.0.0.1", 7355))
 
+# while True:
+#     soundData, addr = s.recvfrom(1500 * 2 * 1)
+#     print(soundData)
 
-def record(stream, CHUNK):
-    while True:
-        frames.append(stream.read(CHUNK))
+# s.close()
 
-def udpStreamOut(CHUNK):
+p = pyaudio.PyAudio()
 
-    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp.bind(("127.0.0.1", 7355))
+stream = p.open(format=pyaudio.paInt16,
+                channels=1,
+                rate=48000,
+                output=True)
 
-    while True:
-        soundData, addr = udp.recvfrom(CHUNK * 2 * CHANNELS)
-        frames.append(soundData)
+data, addr = s.recvfrom(1024) # buffer size is 1024 bytes
 
-    udp.close()
+while data != '':
+    stream.write(data)
+    data, addr = s.recvfrom(1024) # buffer size is 1024 bytes
 
-def play(stream, CHUNK):
-    BUFFER = 10
-    while True:
-            if len(frames) == BUFFER:
-                while True:
-                    if len(frames) > 0:
-                        stream.write(frames.pop(0), CHUNK)
+stream.stop_stream()
+stream.close()
 
-if __name__ == '__main__':
-    CHUNK = 1024
-    FORMAT = pyaudio.paInt8
-    CHANNELS = 2
-    RATE = 44100
-
-    p = pyaudio.PyAudio()
-
-    if len(sys.argv) < 2:
-        print('Please specify either server or client')
-        sys.exit(0)
-    if sys.argv[1] == 'INPUT':    
-        stream = p.open(format = FORMAT, channels = CHANNELS, rate = RATE,  input = True, frames_per_buffer = CHUNK )
-        Tr = Thread(target = record, args = (stream, CHUNK,))
-        Ts = Thread(target = udpStreamIn)
-    else:
-        stream = p.open(format=FORMAT, channels = CHANNELS, rate = RATE, output = True, frames_per_buffer = CHUNK)    
-        Ts = Thread(target = udpStreamOut, args=(CHUNK,))
-        Tr = Thread(target = play, args=(stream, CHUNK,))
-    Tr.setDaemon(True)
-    Ts.setDaemon(True)
-    Tr.start()
-    Ts.start()
-    Tr.join()
-    Ts.join()
+p.terminate()

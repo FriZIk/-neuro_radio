@@ -9,6 +9,7 @@
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import analog
+from gnuradio import audio
 from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
@@ -31,7 +32,7 @@ class rtl_fm(gr.top_block):
         # Variables
         ##################################################
         self.samp_rate = samp_rate = 2048000
-        self.freq = freq = 101.9e6
+        self.freq = freq = 104.4e6
 
         ##################################################
         # Blocks
@@ -45,32 +46,39 @@ class rtl_fm(gr.top_block):
         self.rtlsdr_source_0.set_freq_corr(0, 0)
         self.rtlsdr_source_0.set_dc_offset_mode(0, 0)
         self.rtlsdr_source_0.set_iq_balance_mode(0, 0)
-        self.rtlsdr_source_0.set_gain_mode(False, 0)
-        self.rtlsdr_source_0.set_gain(10, 0)
+        self.rtlsdr_source_0.set_gain_mode(True, 0)
+        self.rtlsdr_source_0.set_gain(20, 0)
         self.rtlsdr_source_0.set_if_gain(20, 0)
         self.rtlsdr_source_0.set_bb_gain(20, 0)
         self.rtlsdr_source_0.set_antenna('', 0)
         self.rtlsdr_source_0.set_bandwidth(0, 0)
+        self.rational_resampler_xxx_1 = filter.rational_resampler_ccc(
+                interpolation=1,
+                decimation=4,
+                taps=None,
+                fractional_bw=None)
         self.rational_resampler_xxx_0 = filter.rational_resampler_fff(
-                interpolation=15,
-                decimation=64,
+                interpolation=48,
+                decimation=50,
                 taps=None,
                 fractional_bw=None)
         self.low_pass_filter_0 = filter.fir_filter_ccf(
-            10,
+            1,
             firdes.low_pass(
                 1,
                 samp_rate,
                 100000,
-                10000,
+                1000000,
                 firdes.WIN_HAMMING,
                 6.76))
-        self.blocks_udp_sink_0 = blocks.udp_sink(gr.sizeof_short*1, '0.0.0.0', 7355, 1472, True)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_short*1, 48000,True)
+        self.blocks_udp_sink_0 = blocks.udp_sink(gr.sizeof_short*1, '127.0.0.1', 7355, 1472, True)
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_short*1, 32768,True)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(1)
         self.blocks_float_to_short_0 = blocks.float_to_short(1, 16000)
+        self.audio_sink_0 = audio.sink(32000, '', True)
         self.analog_wfm_rcv_0 = analog.wfm_rcv(
-        	quad_rate=samp_rate/10,
-        	audio_decimation=1,
+        	quad_rate=500000,
+        	audio_decimation=10,
         )
 
 
@@ -80,10 +88,13 @@ class rtl_fm(gr.top_block):
         ##################################################
         self.connect((self.analog_wfm_rcv_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.blocks_float_to_short_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.audio_sink_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_float_to_short_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.blocks_udp_sink_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.analog_wfm_rcv_0, 0))
-        self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_float_to_short_0, 0))
-        self.connect((self.rtlsdr_source_0, 0), (self.low_pass_filter_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.rational_resampler_xxx_1, 0), (self.low_pass_filter_0, 0))
+        self.connect((self.rtlsdr_source_0, 0), (self.rational_resampler_xxx_1, 0))
 
 
     def get_samp_rate(self):
@@ -91,7 +102,7 @@ class rtl_fm(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 100000, 10000, firdes.WIN_HAMMING, 6.76))
+        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 100000, 1000000, firdes.WIN_HAMMING, 6.76))
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
     def get_freq(self):
