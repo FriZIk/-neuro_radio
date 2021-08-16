@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
+
 import pyaudio
 import socket
 from vosk import Model, KaldiRecognizer
 import sys
 import signal
 
-model = Model(r"/home/bpqvg/Dev/github/neuro_radio/gnuradio/vosk-model-small-ru-0.15")
+model = Model(r"/home/opencyb/neuro_radio/gnuradio/vosk-model-small-ru-0.15")
 rec = KaldiRecognizer(model, 48000)
 
 chunk = 2048

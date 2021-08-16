@@ -42,7 +42,7 @@ class rtl_fm_mono(gr.top_block):
         # Blocks
         ##################################################
         self.rtlsdr_source_0 = osmosdr.source(
-            args="numchan=" + str(1) + " " + 'rtl_tcp=10.10.10.10:1234'
+            args="numchan=" + str(1) + " " + 'rtl_tcp=127.0.0.1:1234'
         )
         self.rtlsdr_source_0.set_time_now(osmosdr.time_spec_t(time.time()), osmosdr.ALL_MBOARDS)
         self.rtlsdr_source_0.set_sample_rate(samp_rate)
