@@ -9,12 +9,6 @@ port = 7355
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(("127.0.0.1", 7355))
 
-# while True:
-#     soundData, addr = s.recvfrom(1500 * 2 * 1)
-#     print(soundData)
-
-# s.close()
-
 p = pyaudio.PyAudio()
 
 stream = p.open(format=pyaudio.paInt16,

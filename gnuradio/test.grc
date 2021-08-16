@@ -32,11 +32,35 @@ options:
     state: enabled
 
 blocks:
+- name: audio_dec
+  id: variable
+  parameters:
+    comment: ''
+    value: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [768, 12.0]
+    rotation: 0
+    state: true
+- name: cutoff
+  id: variable
+  parameters:
+    comment: ''
+    value: '100000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [488, 12.0]
+    rotation: 0
+    state: true
 - name: freq
   id: variable
   parameters:
     comment: ''
-    value: 104.4e6
+    value: 101.9e6
   states:
     bus_sink: false
     bus_source: false
@@ -44,35 +68,71 @@ blocks:
     coordinate: [288, 12.0]
     rotation: 0
     state: enabled
-- name: samp_rate
+- name: quadrature
   id: variable
   parameters:
     comment: ''
-    value: '2048000'
+    value: '500000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 12.0]
+    coordinate: [384, 12.0]
+    rotation: 0
+    state: true
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '2000000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 12.0]
     rotation: 0
     state: enabled
+- name: transition
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 12.0]
+    rotation: 0
+    state: true
+- name: volume
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 12.0]
+    rotation: 0
+    state: true
 - name: analog_wfm_rcv_0
   id: analog_wfm_rcv
   parameters:
     affinity: ''
     alias: ''
-    audio_decimation: '10'
+    audio_decimation: audio_dec
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    quad_rate: '500000'
+    quad_rate: quadrature
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 132.0]
+    coordinate: [312, 340.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: audio_sink_0
   id: audio_sink
   parameters:
@@ -82,12 +142,12 @@ blocks:
     device_name: ''
     num_inputs: '1'
     ok_to_block: 'True'
-    samp_rate: '32000'
+    samp_rate: '48000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1184, 204.0]
+    coordinate: [1128, 348.0]
     rotation: 0
     state: true
 - name: blocks_float_to_short_0
@@ -104,7 +164,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 228.0]
+    coordinate: [896, 404.0]
     rotation: 180
     state: true
 - name: blocks_multiply_const_vxx_0
@@ -113,7 +173,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '1'
+    const: volume
     maxoutbuf: '0'
     minoutbuf: '0'
     type: float
@@ -122,7 +182,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 100.0]
+    coordinate: [896, 348.0]
     rotation: 0
     state: true
 - name: blocks_throttle_0
@@ -134,14 +194,14 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: '32768'
+    samples_per_second: '48000'
     type: short
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 292.0]
+    coordinate: [896, 460.0]
     rotation: 0
     state: true
 - name: blocks_udp_sink_0
@@ -160,7 +220,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1040, 268.0]
+    coordinate: [1088, 436.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
@@ -170,7 +230,7 @@ blocks:
     alias: ''
     beta: '6.76'
     comment: ''
-    cutoff_freq: '100000'
+    cutoff_freq: cutoff
     decim: '1'
     gain: '1'
     interp: '1'
@@ -178,36 +238,16 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     type: fir_filter_ccf
-    width: '1000000'
+    width: transition
     win: firdes.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 172.0]
-    rotation: 0
-    state: enabled
+    coordinate: [312, 188.0]
+    rotation: 180
+    state: true
 - name: rational_resampler_xxx_0
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    decim: '50'
-    fbw: '0'
-    interp: '48'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    taps: ''
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [800, 116.0]
-    rotation: 0
-    state: enabled
-- name: rational_resampler_xxx_1
   id: rational_resampler_xxx
   parameters:
     affinity: ''
@@ -224,7 +264,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 364.0]
+    coordinate: [312, 84.0]
+    rotation: 0
+    state: true
+- name: rational_resampler_xxx_1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '50'
+    fbw: '0'
+    interp: '48'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: ''
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 324.0]
     rotation: 0
     state: true
 - name: rtlsdr_source_0
@@ -264,7 +324,7 @@ blocks:
     ant7: ''
     ant8: ''
     ant9: ''
-    args: rtl_tcp=10.10.10.10:1234
+    args: rtl_tcp=127.0.0.1:1234
     bb_gain0: '20'
     bb_gain1: '20'
     bb_gain10: '20'
@@ -466,7 +526,7 @@ blocks:
     gain7: '10'
     gain8: '10'
     gain9: '10'
-    gain_mode0: 'True'
+    gain_mode0: 'False'
     gain_mode1: 'False'
     gain_mode10: 'False'
     gain_mode11: 'False'
@@ -581,7 +641,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 276.0]
+    coordinate: [8, 100.0]
     rotation: 0
     state: enabled
 - name: wxgui_fftsink2_0
@@ -646,15 +706,15 @@ blocks:
     state: enabled
 
 connections:
-- [analog_wfm_rcv_0, '0', rational_resampler_xxx_0, '0']
+- [analog_wfm_rcv_0, '0', rational_resampler_xxx_1, '0']
 - [blocks_float_to_short_0, '0', blocks_throttle_0, '0']
 - [blocks_multiply_const_vxx_0, '0', audio_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_float_to_short_0, '0']
 - [blocks_throttle_0, '0', blocks_udp_sink_0, '0']
 - [low_pass_filter_0, '0', analog_wfm_rcv_0, '0']
-- [rational_resampler_xxx_0, '0', blocks_multiply_const_vxx_0, '0']
-- [rational_resampler_xxx_1, '0', low_pass_filter_0, '0']
-- [rtlsdr_source_0, '0', rational_resampler_xxx_1, '0']
+- [rational_resampler_xxx_0, '0', low_pass_filter_0, '0']
+- [rational_resampler_xxx_1, '0', blocks_multiply_const_vxx_0, '0']
+- [rtlsdr_source_0, '0', rational_resampler_xxx_0, '0']
 - [rtlsdr_source_0, '0', wxgui_fftsink2_0, '0']
 - [rtlsdr_source_0, '0', wxgui_waterfallsink2_0, '0']
 
