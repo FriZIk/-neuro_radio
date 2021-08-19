@@ -60,7 +60,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 104.4e6
+    value: '434.350'
   states:
     bus_sink: false
     bus_source: false
@@ -108,7 +108,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.3'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -130,7 +130,24 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 340.0]
+    coordinate: [296, 340.0]
+    rotation: 0
+    state: true
+- name: audio_sink_0
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 284.0]
     rotation: 0
     state: true
 - name: blocks_float_to_short_0
@@ -147,7 +164,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 412.0]
+    coordinate: [696, 412.0]
     rotation: 180
     state: true
 - name: blocks_multiply_const_vxx_0
@@ -165,7 +182,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 348.0]
+    coordinate: [696, 348.0]
     rotation: 0
     state: true
 - name: blocks_throttle_0
@@ -184,7 +201,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 460.0]
+    coordinate: [696, 476.0]
     rotation: 0
     state: true
 - name: blocks_udp_sink_0
@@ -203,7 +220,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1240, 436.0]
+    coordinate: [872, 452.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
@@ -227,7 +244,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 188.0]
+    coordinate: [296, 188.0]
     rotation: 180
     state: true
 - name: rational_resampler_xxx_0
@@ -247,7 +264,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 84.0]
+    coordinate: [296, 84.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_1
@@ -267,7 +284,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 324.0]
+    coordinate: [504, 324.0]
     rotation: 0
     state: true
 - name: rtlsdr_source_0
@@ -691,6 +708,7 @@ blocks:
 connections:
 - [analog_wfm_rcv_0, '0', rational_resampler_xxx_1, '0']
 - [blocks_float_to_short_0, '0', blocks_throttle_0, '0']
+- [blocks_multiply_const_vxx_0, '0', audio_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_float_to_short_0, '0']
 - [blocks_throttle_0, '0', blocks_udp_sink_0, '0']
 - [low_pass_filter_0, '0', analog_wfm_rcv_0, '0']

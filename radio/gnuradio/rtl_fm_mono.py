@@ -9,6 +9,7 @@
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import analog
+from gnuradio import audio
 from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
@@ -30,11 +31,11 @@ class rtl_fm_mono(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.volume = volume = 0.3
+        self.volume = volume = 1
         self.transition = transition = 1000000
         self.samp_rate = samp_rate = 2000000
         self.quadrature = quadrature = 500000
-        self.freq = freq = 104.4e6
+        self.freq = freq = 434.350
         self.cutoff = cutoff = 100000
         self.audio_dec = audio_dec = 10
 
@@ -42,7 +43,7 @@ class rtl_fm_mono(gr.top_block):
         # Blocks
         ##################################################
         self.rtlsdr_source_0 = osmosdr.source(
-            args="numchan=" + str(1) + " " + 'rtl_tcp=127.0.0.1:1234'
+            args="numchan=" + str(1) + " " + 'rtl_tcp=10.10.10.10:1234'
         )
         self.rtlsdr_source_0.set_time_now(osmosdr.time_spec_t(time.time()), osmosdr.ALL_MBOARDS)
         self.rtlsdr_source_0.set_sample_rate(samp_rate)
@@ -79,6 +80,7 @@ class rtl_fm_mono(gr.top_block):
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_short*1, 48000,True)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(volume)
         self.blocks_float_to_short_0 = blocks.float_to_short(1, 16000)
+        self.audio_sink_0 = audio.sink(48000, '', True)
         self.analog_wfm_rcv_0 = analog.wfm_rcv(
         	quad_rate=quadrature,
         	audio_decimation=audio_dec,
@@ -91,6 +93,7 @@ class rtl_fm_mono(gr.top_block):
         ##################################################
         self.connect((self.analog_wfm_rcv_0, 0), (self.rational_resampler_xxx_1, 0))
         self.connect((self.blocks_float_to_short_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.audio_sink_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_float_to_short_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.blocks_udp_sink_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.analog_wfm_rcv_0, 0))
